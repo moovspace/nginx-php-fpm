@@ -176,9 +176,12 @@ server {
 # Enable vhost
 sudo ln -s /etc/nginx/sites-available/domain.xx /etc/nginx/sites-enabled/
 
-# Restart
+# Restart nginx
 sudo nginx -t
 sudo service nginx restart
+
+# Restart php-fpm
+sudo service php7.3-fpm restart
 
 # Usuwanie domeny
 rm /etc/nginx/sites-enabled/domain.xx
