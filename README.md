@@ -175,6 +175,13 @@ server {
 ```bash
 # Enable vhost
 sudo ln -s /etc/nginx/sites-available/domain.xx /etc/nginx/sites-enabled/
+
+# Restart
+sudo nginx -t
+sudo service nginx restart
+
+# Usuwanie domeny
+rm /etc/nginx/sites-enabled/domain.xx
 ```
 
 ### Opcjonalne ustawienia hosta
