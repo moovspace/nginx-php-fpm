@@ -17,7 +17,7 @@ sudo apt install -y php-fpm php-mysql php-gd php-mbstring php-json php-curl php-
 ```
 
 ## Konfiguracja php-fpm
-Tworzenie poola i grupy dla strony
+Tworzenie poola i grupy dla strony (odseparowanie php dla domen)
 
 ### Tworzenie grupy i użytkownika
 ```bash
@@ -27,6 +27,13 @@ useradd -g user_domain_xx user_domain_xx
 
 # Katalog dla błędów:
 mkdir /var/log/php-fpm
+
+# Katalog strony
+mkdir -p /var/www/domain.xx
+
+# Zmień uprawnienia po dodaniu plików strony
+chown -R www-data:www-data /var/www/domain.xx
+chmod -R 775 /var/www/domain.xx
 ```
 
 ### Konfiguracja php-fpm dla domeny
@@ -96,8 +103,9 @@ server {
     listen 80 default_server;
     listen [::]:80 default_server;
     server_name _;
-    root /var/www/domain.xx;
-    ; Ukryj przy generowaniu certyfikatów letsencrypt
+    ; Dodaj przy generowaniu certyfikatów certbot
+    ; root /var/www/domain.xx;
+    ; Ukryj przy generowaniu certyfikatów certbot
     return 301 https://$host$request_uri; 
 }
 
@@ -111,6 +119,9 @@ server {
     ssl_certificate /etc/letsencrypt/live/domain.xx/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/domain.xx/privkey.pem;
     
+    ssl_protocols TLSv1.3;
+    ssl_prefer_server_ciphers off;
+    
     ssl_session_timeout 1d;
     ssl_session_cache shared:MozSSL:10m;  # about 40000 sessions
     ssl_session_tickets off;
@@ -119,14 +130,11 @@ server {
     ssl_stapling_verify on;
     ssl_trusted_certificate /etc/letsencrypt/live/domain.xx/fullchain.pem;
     
-    ssl_protocols TLSv1.3;
-    ssl_prefer_server_ciphers off;
-    
     add_header Strict-Transport-Security "max-age=63072000" always;      
     resolver 127.0.0.1;
     
     location / {
-		    try_files $uri $uri/ /index.php$is_args$args;
+	try_files $uri $uri/ /index.php$is_args$args;
     }
     
     location ~ \.php$ {
@@ -152,74 +160,80 @@ server {
         access_log        off;
         log_not_found     off;
         expires           3d;
-	      add_header Cache-Control "public, no-transform";
+	add_header Cache-Control "public, no-transform";
     }
     
     location ~ /\.ht {
         access_log off;
         log_not_found off;
-		    deny  all;
+	deny  all;
     }
 }
+```
+
+### Włączenie domeny
+```bash
+# Enable vhost
+sudo ln -s /etc/nginx/sites-available/domain.xx /etc/nginx/sites-enabled/
 ```
 
 ### Opcjonalne ustawienia hosta
 ```conf
 # Przekieruj favicon
 location = /favicon.ico {
-	  rewrite . /favicon/favicon.ico;
-	  log_not_found off;
-    access_log off;
+	rewrite . /favicon/favicon.ico;
+	log_not_found off;
+	access_log off;
 }
 
 # Nie loguj
 location = /robots.txt {
-    allow all;
-    log_not_found off;
-    access_log off;
+	allow all;
+	log_not_found off;
+	access_log off;
 }
 
 # Dostęp i przekierowania
 location / {
-    # Get file or folder or error
-    try_files $uri $uri/ =404;
+	# Get file or folder or error
+	try_files $uri $uri/ =404;
 
-    # Get file or folder or redirect uri to url param in index.php
-    try_files $uri $uri/ /index.php?url=$uri&$args;
+	# Get file or folder or redirect uri to url param in index.php
+	try_files $uri $uri/ /index.php?url=$uri&$args;
 
-    # Wordpress
-    try_files $uri $uri/ /index.php$is_args$args;
+	# Wordpress
+	try_files $uri $uri/ /index.php$is_args$args;
 }
 
 # Przeglądarka Cache-Controll
 location ~* \.(html|css|js|jpg|jpeg|gif|png|pdf|txt|md|ico|xml)$ {
-    access_log        off;
-    log_not_found     off;
-    expires           3d;
-    add_header Cache-Control "public, no-transform";
+	access_log        off;
+	log_not_found     off;
+	expires           3d;
+	add_header Cache-Control "public, no-transform";
 }
 
 # Ukryj pliki z kropką na początku
 location ~ /\. {
-    access_log off;
-    log_not_found off;
-    deny all;
+	access_log off;
+	log_not_found off;
+	deny all;
 }
 
 # Zablokuj dostep do katalogów
 location ~ /(dir1|dir2|dir3) {
-   deny all;
-   return 404;
+	deny all;
+	return 404;
 }
 
 # Wyłącz php w katalogu
 location ~ /uploads/.*\.php$ {
-    return 403;
+	return 403;
 }
 
 # Wyłącz php w katalogach
 location ~* /(?:uploads|media|files)/.*\.php$ {
-    deny all;
+	deny all;
 }
 ```
 
@@ -237,3 +251,10 @@ certbot renew
 # Wymuszenie odnowienia wszystkich
 certbot renew --force-renew
 ```
+
+#### Links
+ - https://www.journaldev.com/26097/php-fpm-nginx
+ - https://www.if-not-true-then-false.com/2011/nginx-and-php-fpm-configuration-and-optimizing-tips-and-tricks
+ - https://ssl-config.mozilla.org
+ - https://www.nginx.com/resources/wiki/start/topics/recipes/wordpress
+ - https://wordpress.org/support/article/nginx 
