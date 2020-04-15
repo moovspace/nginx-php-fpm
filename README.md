@@ -271,6 +271,7 @@ FLUSH PRIVILEGES;
 ```
 
 #### Links
+ - https://www.nginx.com/blog/installing-wordpress-with-nginx-unit/
  - https://www.journaldev.com/26097/php-fpm-nginx
  - https://www.if-not-true-then-false.com/2011/nginx-and-php-fpm-configuration-and-optimizing-tips-and-tricks
  - https://ssl-config.mozilla.org
