@@ -252,6 +252,24 @@ certbot renew
 certbot renew --force-renew
 ```
 
+### Mysql, mariadb
+```bash
+sudo apt install -y mysql-server
+sudo mysql_secure_installation
+sudo mysql -u root -p
+
+CREATE DATABASE wordpress;
+CREATE USER 'user'@'localhost' IDENTIFIED BY 'toor';
+CREATE USER 'user'@'127.0.0.1' IDENTIFIED BY 'toor';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'user'@'localhost';
+GRANT ALL PRIVILEGES ON wordpress.* TO 'user'@'127.0.0.1';
+FLUSH PRIVILEGES;
+
+# Allow create tables
+# GRANT ALL PRIVILEGES ON wordpress.* TO 'user'@'localhost' WITH GRANT OPTION;
+# GRANT ALL PRIVILEGES ON wordpress.* TO 'user'@'127.0.0.1' WITH GRANT OPTION;
+```
+
 #### Links
  - https://www.journaldev.com/26097/php-fpm-nginx
  - https://www.if-not-true-then-false.com/2011/nginx-and-php-fpm-configuration-and-optimizing-tips-and-tricks
