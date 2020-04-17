@@ -95,6 +95,13 @@ env[TEMP] = /tmp
 ; process_control_timeout 10s
 ```
 
+### Php-fpm rozmiar
+```bash
+ps -eo size,pid,user,command --sort -size | awk '{ hr=$1/1024 ; printf("%13.2f Mb ",hr) } { for ( x=4 ; x<=NF ; x++ ) { printf("%s ",$x) } print "" }' | grep php-fpm
+
+pgrep -f php-fpm | xargs -r ps --no-headers -o "rss,cmd" | awk '{ sum+=$1 } END { printf ("%d%s\n", sum/NR/1024,"M") }'
+```
+
 ### Tworzenie virtual hosta nginx
 nano /etc/nginx/sites-available/domain.xx.conf
 ```bash
