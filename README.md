@@ -252,8 +252,11 @@ location ~* /(?:uploads|media|files)/.*\.php$ {
 # Instalacja 
 apt -y install certbot
 
-# Generowanie certyfikaty
+# Generowanie certyfikatu
 certbot certonly --standalone -d domain.xx -d www.domain.xx
+
+# Lub
+certbot certonly --webroot -w /var/www/html/domain.xx -d www.domain.xx -d domain.xx
 
 # Odnowienie wygasających
 certbot renew
