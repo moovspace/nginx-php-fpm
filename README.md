@@ -49,7 +49,7 @@ group = user_domain_xx
 ; Socket
 ; listen = 127.0.0.1:9000
 ; Lub unix socket (local only)
-listen = /var/run/php-fpm-domain-xx-site.sock
+listen = /var/run/php/php7.3-fpm-domain-xx-site.sock
 
 ; Nginx user and group
 listen.owner = www-data
@@ -151,7 +151,7 @@ server {
         include snippets/fastcgi-php.conf;
 		    
         # Unix socket
-        fastcgi_pass unix:/var/run/php-fpm-domain-xx-site.sock
+        fastcgi_pass unix:/var/run/php/php7.3-fpm-domain-xx-site.sock
         
         # Or socket
 		    # fastcgi_pass 127.0.0.1:9000;		    
