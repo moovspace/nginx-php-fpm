@@ -13,7 +13,7 @@ sudo apt upgrade
 sudo apt install -y nginx
 
 # Zainstaluj php (php7.3-fpm)
-sudo apt install -y php-fpm php-mysql php-gd php-mbstring php-json php-curl php-mcrypt php-sqlite3 php-intl php-iconv
+sudo apt install -y php-fpm php-mysql php-gd php-mbstring php-json php-curl php-mcrypt php-sqlite3 php-intl php-iconv php-xml
 ```
 
 ## Konfiguracja php-fpm
